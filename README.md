@@ -36,9 +36,7 @@ N = 50
 ```
 f = lambda x: 0.2*x + 25*x/(1+x**2) + 10*np.cos(x/10) + 0.01 * np.exp(-x)
 h = lambda x: 1/20*(x**2)
-a = lambda x: 0.2 + (25 - 25*x**2 - 25*x**3) / ((1+x**2)**2) - np.sin(x/10) - 0.01*np.exp(-x)
 b = np.array([[1.0]])
-c = lambda x: 1/10 * x
 N = 50
 Q = np.array([[1.0]])
 R = np.array([[3.0]])
