@@ -47,41 +47,60 @@ def experiment(
     N: int,
     figname: str,
 ) -> np.ndarray:
+    dim = A.shape[0]
     noise_v = np.random.randn(N, 1) * np.sqrt(Q)
     noise_w = np.random.randn(N, 1) * np.sqrt(R)
-    x = np.zeros((N, 1))
+    x = np.zeros((N, dim))
     y = np.zeros((N, 1))
     y[0] = np.dot(C.T, x[0]) + noise_w[0]
     for k in range(1, N):
-        x[k] = np.dot(A, x[k-1]) + B * noise_v[k-1]
+        x[k] = np.dot(A, x[k-1]) + np.dot(B, noise_v[k-1])
         y[k] = np.dot(C.T, x[k]) + noise_w[k]
     
-    x_hat = np.zeros((N, 1))
+    x_hat = np.zeros((N, dim))
     P = P_0
-    x_hat[0] = xhat_0
+    x_hat[0] = xhat_0.reshape(-1)
 
     for k in range(1, N):
-        x_hat[k], P, G = kf(A, B, Bu, C, Q, R, u, y[k], x_hat[k-1], P)
+        x_hat_new, P, G = kf(A, B, Bu, C, Q, R, u, y[k], x_hat[k-1], P)
+        x_hat[k] = x_hat_new.reshape(-1)
     
-    plt.plot(np.arange(0, N), y, c="orange", linestyle="-", label="observation")
-    plt.plot(np.arange(0, N), x, c="gray", linestyle="--", label="ground truth")
-    plt.plot(np.arange(0, N), x_hat, c="purple", linestyle="-.", label="state estimation")
-    plt.xlabel("number of samples")
-    plt.legend()
-    plt.savefig(f"./image/{figname}")
+    fig, axes = plt.subplots(dim, 1)
+    if dim == 1:
+        axes.plot(np.arange(0, N), y[:, 0], c="orange", linestyle="-", label="observation")
+        axes.plot(np.arange(0, N), x[:, 0], c="gray", linestyle="--", label="ground truth")
+        axes.plot(np.arange(0, N), x_hat[:, 0], c="purple", linestyle="-.", label="state estimation")
+        axes.legend()
+    else:
+        for i in range(dim):
+            axes[i].plot(np.arange(0, N), y[:, 0], c="orange", linestyle="-", label="observation")
+            axes[i].plot(np.arange(0, N), x[:, i], c="gray", linestyle="--", label="ground truth")
+            axes[i].plot(np.arange(0, N), x_hat[:, i], c="purple", linestyle="-.", label="state estimation")
+            axes[i].legend()
+
+    plt.savefig(figname)
     plt.show()
 
 def main():
     figname = sys.argv[1]
     # parameters
-    A = np.array([1])
-    b = np.array([1])
-    c = np.array([1])
-    Q = np.array([1])
-    R = np.array([4])
-    xhat_0 = np.array([0])
-    P_0 = np.array([0])
-    N = 300
+    A = np.array([
+        [1.0]
+    ])
+    b = np.array([
+        [1.5,],
+    ])
+    c = np.array([
+        [0.36,],
+    ])
+    Q = 100.0
+    R = 1.0
+    xhat_0 = np.array([
+        [0.0,],
+    ])
+    gamma = 0.6879987098
+    P_0 = np.identity(1) * gamma
+    N = 50
 
     experiment(
         A, b, np.zeros(1), c, Q, R, np.zeros(1), xhat_0, P_0, N, figname
