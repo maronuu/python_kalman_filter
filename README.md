@@ -1,11 +1,11 @@
 # python_kalman_filter
 ## What is this
-Basic kalman filter algorithms implemented in Python, including 
+Basic Kalman filter algorithms implemented in Python, including 
 1) Linear Kalman Filter
 2) Extended Kalman Filter
 3) Unscented Kalman Filter
-It shows derivertives of kalman filter can well estimate states of a system.
-Note that the time efficiency is not considered so much.
+It shows derivatives of the Kalman filter can well estimate the states of a system.
+Note that time efficiency is not considered so much.
 
 
 ## Examples
